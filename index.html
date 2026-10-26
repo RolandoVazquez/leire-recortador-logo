@@ -653,33 +653,39 @@
             }
 
             const dpr = window.devicePixelRatio || 1;
-            const previewWidth = canvas.width / dpr;
-            const previewHeight = canvas.height / dpr;
+            const centerX = (targetW / 2) + (state.panX * dpr * (targetW / canvas.width));
+            const centerY = (targetH / 2) + (state.panY * dpr * (targetH / canvas.height));
 
-            const scaleX = targetW / previewWidth;
-            const scaleY = targetH / previewHeight;
-
-            const centerX = targetW / 2 + (state.panX * scaleX);
-            const centerY = targetH / 2 + (state.panY * scaleY);
-
-            // 5. Draw Image at 100% Native Quality
             expCtx.drawImage(
-                state.image, 
-                centerX - drawW / 2, 
-                centerY - drawH / 2, 
-                drawW, 
+                state.image,
+                centerX - drawW / 2,
+                centerY - drawH / 2,
+                drawW,
                 drawH
             );
             expCtx.restore();
 
-            // 6. Trigger Native Lossless PNG Download
+            // 5. Generate File Download
+            const mimeType = format === 'ico' ? 'image/x-icon' : 'image/png';
+            const extension = format === 'ico' ? 'ico' : 'png';
             const link = document.createElement('a');
-            link.download = `logo-leire-transparent-hd.${format === 'ico' ? 'ico' : 'png'}`;
-            link.href = exportCanvas.toDataURL('image/png', 1.0);
+            link.download = `Leire-Logo-Crop-${Date.now()}.${extension}`;
+            link.href = exportCanvas.toDataURL(mimeType);
             link.click();
 
             exportModal.classList.add('opacity-0', 'pointer-events-none');
         });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+            .catch(err => console.log('Error al registrar el Service Worker:', err));
+        });
+      }
     </script>
 </body>
 </html>
