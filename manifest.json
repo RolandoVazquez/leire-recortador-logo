@@ -1,13 +1,13 @@
 {
-  "name": "Leire - Creador de Logos",
-  "short_name": "Leire Logos",
-  "start_url": "./",
+  "name": "Leire - Recortador de Logos",
+  "short_name": "Logo Crop",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#121212",
+  "theme_color": "#e91e63",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "Logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
