@@ -66,6 +66,15 @@
             cursor: pointer;
             box-shadow: 0 0 10px rgba(255, 42, 133, 0.5);
         }
+        /* Animación de latido (pulsación) para el logo */
+        @keyframes pulseLogo {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pulse-logo {
+            animation: pulseLogo 1.5s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-brand-dark text-gray-100 font-sans h-screen flex flex-col overflow-hidden">
@@ -73,7 +82,7 @@
     <!-- Header -->
     <header class="h-14 border-b border-brand-border bg-brand-card/80 backdrop-blur-md px-4 flex items-center justify-between z-20 shrink-0">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold shadow-lg shadow-brand-500/30">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-500 to-brand-600 flex items-center justify-center text-white font-bold shadow-lg shadow-brand-500/30 animate-pulse-logo">
                 <i class="fa-solid fa-crop-simple text-sm"></i>
             </div>
             <div>
@@ -100,7 +109,7 @@
             
             <!-- Default Upload View (Empty State) -->
             <div id="uploadPlaceholder" class="text-center p-6 max-w-sm mx-auto z-10 bg-brand-card/90 backdrop-blur-lg border border-brand-border rounded-2xl shadow-2xl">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-600 text-2xl">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-600 text-2xl animate-pulse-logo">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
                 </div>
                 <h2 class="text-lg font-semibold mb-1">Sube tu Isotipo / Logo</h2>
@@ -665,27 +674,14 @@
             );
             expCtx.restore();
 
-            // 5. Generate File Download
-            const mimeType = format === 'ico' ? 'image/x-icon' : 'image/png';
-            const extension = format === 'ico' ? 'ico' : 'png';
+            // 5. Trigger File Download
             const link = document.createElement('a');
-            link.download = `Leire-Logo-Crop-${Date.now()}.${extension}`;
-            link.href = exportCanvas.toDataURL(mimeType);
+            link.download = `Leire-Logo-${Date.now()}.${format === 'ico' ? 'ico' : 'png'}`;
+            link.href = exportCanvas.toDataURL(format === 'ico' ? 'image/x-icon' : 'image/png');
             link.click();
 
             exportModal.classList.add('opacity-0', 'pointer-events-none');
         });
-    </script>
-
-    <!-- Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
-            .catch(err => console.log('Error al registrar el Service Worker:', err));
-        });
-      }
     </script>
 </body>
 </html>
