@@ -1,28 +1,193 @@
-                            <i class="fa-solid fa-egg text-sm"></i>
-                            <span class="text-[10px] font-medium">Óvalo</span>
-                        </button>
-                        <button data-shape="square" class="shape-btn p-2 rounded-xl border border-brand-border bg-brand-dark/40 text-gray-400 hover:text-gray-200 flex flex-col items-center gap-1 transition-all">
-                            <i class="fa-regular fa-square text-sm"></i>
-                            <span class="text-[10px] font-medium">Cuadrado</span>
-                        </button>
-                        <button data-shape="rect" class="shape-btn p-2 rounded-xl border border-brand-border bg-brand-dark/40 text-gray-400 hover:text-gray-200 flex flex-col items-center gap-1 transition-all">
-                            <i class="fa-regular fa-rectangle-wide text-sm"></i>
-                            <span class="text-[10px] font-medium">16:9</span>
-                        </button>
-                    </div>
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-[#0f0f13]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Leire - Logo Crop</title>
+
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF007F">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#e91e63',
+                            600: '#FF007F',
+                            700: '#d8006c',
+                            dark: '#0f0f13',
+                            card: '#18181f',
+                            border: '#2a2a36'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Pattern Backgrounds */
+        .bg-checkerboard {
+            background-image: linear-gradient(45deg, #1f1f27 25%, transparent 25%), 
+                              linear-gradient(-45deg, #1f1f27 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #1f1f27 75%), 
+                              linear-gradient(-45deg, transparent 75%, #1f1f27 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #141419;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0f13;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a36;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF007F;
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: #2a2a36;
+            height: 6px;
+            border-radius: 9999px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #FF007F;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        /* Prevent text selection during canvas drag */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body class="h-full text-white font-sans flex flex-col no-select overflow-x-hidden bg-[#0f0f13]">
+
+    <!-- Top Header -->
+    <header class="h-16 border-b border-brand-border/60 px-4 flex items-center justify-between bg-[#0f0f13]/90 backdrop-blur sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-600 flex items-center justify-center shadow-lg shadow-brand-600/30">
+                <i class="fa-solid fa-crop-simple text-white text-lg"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight text-white">Leire</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full border border-brand-600/40 text-brand-600 bg-brand-600/10 font-medium">Logo Crop</span>
+        </div>
+
+        <button id="btnOpenExport" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold text-sm shadow-lg shadow-brand-600/30 flex items-center gap-2 transition-all active:scale-95">
+            <i class="fa-solid fa-download"></i>
+            <span>Exportar</span>
+        </button>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+        <!-- Canvas / Upload Interactive Area -->
+        <section id="workspaceArea" class="flex-1 flex items-center justify-center relative bg-checkerboard p-4 min-h-[350px] lg:min-h-0 overflow-hidden">
+            
+            <!-- Default Empty Upload Card -->
+            <div id="uploadCard" class="w-full max-w-md bg-brand-card/90 backdrop-blur-md border border-brand-border rounded-3xl p-8 text-center shadow-2xl flex flex-col items-center justify-center z-10 transition-all">
+                <div class="w-16 h-16 rounded-full bg-brand-dark/80 border border-brand-border flex items-center justify-center mb-5 text-brand-600 shadow-inner">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold mb-2 text-white">Sube tu Isotipo / Logo</h2>
+                <p class="text-xs text-gray-400 mb-6 leading-relaxed max-w-xs">
+                    Recorta fondos indeseados con formas perfectas (Círculo, Óvalo, Cuadrado) sin perder calidad.
+                </p>
+
+                <label class="px-6 py-3 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold text-sm shadow-lg shadow-brand-600/30 flex items-center gap-2.5 cursor-pointer transition-all active:scale-95">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Seleccionar Imagen</span>
+                    <input type="file" id="fileInput" accept="image/*" class="hidden">
+                </label>
+            </div>
+
+            <!-- Main Interactive Canvas -->
+            <canvas id="cropCanvas" class="hidden absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+
+            <!-- Touch Zoom & Pan Hint Badge -->
+            <div id="interactionHint" class="hidden absolute top-4 left-4 bg-brand-dark/70 backdrop-blur-sm text-[11px] text-gray-300 px-3 py-1.5 rounded-full border border-brand-border/60 pointer-events-none items-center gap-2 z-10">
+                <i class="fa-solid fa-hand-pointer text-brand-600"></i>
+                <span>Arrastra o haz zoom para acomodar la imagen</span>
+            </div>
+        </section>
+
+        <!-- Lower / Side Settings Controls -->
+        <aside class="w-full lg:w-96 bg-brand-card border-t lg:border-t-0 lg:border-l border-brand-border flex flex-col justify-between overflow-y-auto p-5 z-20">
+            <div class="space-y-5">
+                
+                <!-- Section Header -->
+                <div class="flex items-center justify-between pb-2 border-b border-brand-border/50">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">AJUSTES DE RECORTE</h3>
+                    <label class="text-xs font-medium text-brand-600 hover:text-brand-500 flex items-center gap-1 cursor-pointer transition-colors">
+                        <i class="fa-solid fa-arrow-rotate-left text-[11px]"></i>
+                        <span>Cambiar</span>
+                        <input type="file" id="fileInputSecondary" accept="image/*" class="hidden">
+                    </label>
                 </div>
 
-                <!-- 2. Smooth Edges / Anti-aliasing Slider -->
+                <!-- 1. Shape Selection -->
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-semibold text-gray-300">Suavizado de Bordes</label>
-                        <span id="featherValue" class="text-[11px] text-brand-600 font-mono">0 px</span>
+                    <label class="block text-xs font-semibold mb-2.5 text-gray-300">Forma del Marco</label>
+                    <div class="grid grid-cols-4 gap-2.5">
+                        <button data-shape="circle" class="shape-btn active p-3 rounded-2xl border border-brand-600 bg-brand-600/10 text-brand-600 flex flex-col items-center gap-1.5 transition-all">
+                            <i class="fa-regular fa-circle text-lg"></i>
+                            <span class="text-[11px] font-medium">Círculo</span>
+                        </button>
+                        <button data-shape="oval" class="shape-btn p-3 rounded-2xl border border-brand-border bg-brand-dark/40 text-gray-400 hover:text-gray-200 flex flex-col items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-egg text-lg"></i>
+                            <span class="text-[11px] font-medium">Óvalo</span>
+                        </button>
+                        <button data-shape="square" class="shape-btn p-3 rounded-2xl border border-brand-border bg-brand-dark/40 text-gray-400 hover:text-gray-200 flex flex-col items-center gap-1.5 transition-all">
+                            <i class="fa-regular fa-square text-lg"></i>
+                            <span class="text-[11px] font-medium">Cuadrado</span>
+                        </button>
+                        <button data-shape="rect" class="shape-btn p-3 rounded-2xl border border-brand-border bg-brand-dark/40 text-gray-400 hover:text-gray-200 flex flex-col items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-tv text-lg"></i>
+                            <span class="text-[11px] font-medium">16:9</span>
+                        </button>
                     </div>
-                    <input type="range" id="featherSlider" min="0" max="25" value="0" class="w-full">
                 </div>
 
-                <!-- 3. Centering & Alignment Helper -->
-                <div class="flex items-center justify-between pt-1 border-t border-brand-border/40">
+                <!-- 2. Edge Feathering / Anti-aliasing -->
+                <div class="pt-1">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-semibold text-gray-300">Suavizado de Bordes</label>
+                        <span id="featherValue" class="text-[11px] text-brand-600 font-mono font-bold">0 px</span>
+                    </div>
+                    <input type="range" id="featherSlider" min="0" max="25" value="0" class="w-full cursor-pointer">
+                </div>
+
+                <!-- 3. Alignment Guides Toggle -->
+                <div class="flex items-center justify-between py-2 border-t border-b border-brand-border/40">
                     <span class="text-xs font-semibold text-gray-300">Guías de Alineación</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="toggleGuides" class="sr-only peer" checked>
@@ -30,46 +195,506 @@
                     </label>
                 </div>
 
-                <!-- 4. Background Preview Modes -->
+                <!-- 4. Preview Canvas Background Modes -->
                 <div>
-                    <label class="block text-xs font-semibold mb-1.5 text-gray-300">Fondo de Previsualización</label>
+                    <label class="block text-xs font-semibold mb-2 text-gray-300">Fondo de Previsualización</label>
                     <div class="grid grid-cols-4 gap-2">
-                        <button data-bg="checker" class="bg-btn active py-1.5 rounded-lg border border-brand-500 bg-brand-500/10 text-xs text-brand-600 font-medium text-center">
+                        <button data-bg="checker" class="bg-btn active py-2 rounded-xl border border-brand-600 bg-brand-600/10 text-xs text-brand-600 font-medium text-center transition-all">
                             Damero
                         </button>
-                        <button data-bg="dark" class="bg-btn py-1.5 rounded-lg border border-brand-border bg-black text-xs text-gray-300 font-medium text-center">
+                        <button data-bg="dark" class="bg-btn py-2 rounded-xl border border-brand-border bg-black text-xs text-gray-300 font-medium text-center transition-all">
                             Oscuro
                         </button>
-                        <button data-bg="light" class="bg-btn py-1.5 rounded-lg border border-brand-border bg-white text-black text-xs font-medium text-center">
+                        <button data-bg="light" class="bg-btn py-2 rounded-xl border border-brand-border bg-white text-black text-xs font-medium text-center transition-all">
                             Claro
                         </button>
-                        <button data-bg="red" class="bg-btn py-1.5 rounded-lg border border-brand-border bg-red-600 text-white text-xs font-medium text-center">
+                        <button data-bg="red" class="bg-btn py-2 rounded-xl border border-brand-border bg-red-600 text-white text-xs font-medium text-center transition-all">
                             Rojo
                         </button>
                     </div>
                 </div>
+
             </div>
         </aside>
     </main>
 
-    <!-- Export Modal -->
-    <div id="exportModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity">
-        <div class="bg-brand-card border border-brand-border w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
-            <button id="btnCloseModal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
+    <!-- Modal de Exportación Ultra HD -->
+    <div id="exportModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-brand-card border border-brand-border w-full max-w-md rounded-3xl p-6 shadow-2xl relative transform scale-95 transition-transform duration-300">
+            
+            <button id="btnCloseModal" class="absolute top-5 right-5 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full flex items-center justify-center bg-brand-dark/50 border border-brand-border transition-colors">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-            <h3 class="text-lg font-bold mb-1">Exportar Logo Ultra HD</h3>
-            <p class="text-xs text-gray-400 mb-4">Elige el formato y conserva el 100% de la densidad de píxeles original.</p>
+            
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-8 h-8 rounded-xl bg-brand-600/10 border border-brand-600/40 text-brand-600 flex items-center justify-center">
+                    <i class="fa-solid fa-sparkles text-sm"></i>
+                </div>
+                <h3 class="text-lg font-bold">Exportar Logo Ultra HD</h3>
+            </div>
+            <p class="text-xs text-gray-400 mb-5">Elige el formato deseado conservando el 100% de la densidad de píxeles original.</p>
 
             <div class="space-y-4">
-                <!-- Export Format -->
+                <!-- Export Format Selection -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-300 mb-1.5">Formato de Archivo</label>
+                    <label class="block text-xs font-semibold text-gray-300 mb-2">Formato de Archivo</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <label class="border border-brand-border hover:border-brand-500 rounded-xl p-3 flex items-center gap-3 cursor-pointer bg-brand-dark/40 has-[:checked]:border-brand-500 has-[:checked]:bg-brand-500/10">
-                            <input type="radio" name="exportFormat" value="png" checked class="text-brand-600 focus:ring-0">
+                        <label class="border border-brand-600 bg-brand-600/10 rounded-2xl p-3 flex items-center gap-3 cursor-pointer transition-all">
+                            <input type="radio" name="exportFormat" value="png" checked class="text-brand-600 focus:ring-0 accent-brand-600">
                             <div>
-                                <div class="text-xs font-bold">PNG (.png)</div>
+                                <div class="text-xs font-bold text-white">PNG (.png)</div>
                                 <div class="text-[10px] text-gray-400">Transparencia HD Nativa</div>
                             </div>
                         </label>
+                        <label class="border border-brand-border bg-brand-dark/40 hover:border-brand-600/50 rounded-2xl p-3 flex items-center gap-3 cursor-pointer transition-all">
+                            <input type="radio" name="exportFormat" value="ico" class="text-brand-600 focus:ring-0 accent-brand-600">
+                            <div>
+                                <div class="text-xs font-bold text-white">ICO (.ico)</div>
+                                <div class="text-[10px] text-gray-400">Favicon para Webs</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Info Notice -->
+                <div class="p-3 rounded-2xl bg-brand-dark/60 border border-brand-border/60 text-[11px] text-gray-400 flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-info text-brand-600 text-sm mt-0.5"></i>
+                    <span>Todo el fondo fuera del marco seleccionado se eliminará automáticamente dejando una transparencia impecable.</span>
+                </div>
+
+                <!-- Action Button -->
+                <button id="btnDownloadFinal" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold text-sm shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 transition-all active:scale-95">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Descargar Imagen Procesada</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // --- State Management ---
+        const state = {
+            image: null,
+            shape: 'circle', // 'circle', 'oval', 'square', 'rect'
+            feather: 0,
+            showGuides: true,
+            bgMode: 'checker', // 'checker', 'dark', 'light', 'red'
+            scale: 1,
+            panX: 0,
+            panY: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            pinchDistance: 0
+        };
+
+        // --- DOM Elements ---
+        const fileInput = document.getElementById('fileInput');
+        const fileInputSecondary = document.getElementById('fileInputSecondary');
+        const uploadCard = document.getElementById('uploadCard');
+        const cropCanvas = document.getElementById('cropCanvas');
+        const ctx = cropCanvas.getContext('2d');
+        const workspaceArea = document.getElementById('workspaceArea');
+        const interactionHint = document.getElementById('interactionHint');
+
+        const shapeBtns = document.querySelectorAll('.shape-btn');
+        const bgBtns = document.querySelectorAll('.bg-btn');
+        const featherSlider = document.getElementById('featherSlider');
+        const featherValue = document.getElementById('featherValue');
+        const toggleGuides = document.getElementById('toggleGuides');
+
+        const btnOpenExport = document.getElementById('btnOpenExport');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const exportModal = document.getElementById('exportModal');
+        const btnDownloadFinal = document.getElementById('btnDownloadFinal');
+
+        // --- Canvas Initialization & Resizing ---
+        function resizeCanvas() {
+            if (!cropCanvas) return;
+            const rect = workspaceArea.getBoundingClientRect();
+            cropCanvas.width = rect.width;
+            cropCanvas.height = rect.height;
+            render();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            registerServiceWorker();
+        });
+
+        // --- Image Loading Handler ---
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    state.image = img;
+                    // Reset positions & Auto-center/fit image inside view frame
+                    resetImageTransform();
+                    
+                    uploadCard.classList.add('hidden');
+                    cropCanvas.classList.remove('hidden');
+                    interactionHint.classList.remove('hidden');
+                    interactionHint.classList.add('flex');
+                    
+                    resizeCanvas();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        fileInput.addEventListener('change', handleFileSelect);
+        fileInputSecondary.addEventListener('change', handleFileSelect);
+
+        function resetImageTransform() {
+            if (!state.image) return;
+            const rect = workspaceArea.getBoundingClientRect();
+            const maskRadius = Math.min(rect.width, rect.height) * 0.35;
+            
+            // Calculate scale to nicely fit inside the frame
+            const minDim = Math.min(state.image.width, state.image.height);
+            state.scale = (maskRadius * 2) / minDim;
+            state.panX = rect.width / 2;
+            state.panY = rect.height / 2;
+        }
+
+        // --- Main Canvas Rendering Engine ---
+        function render() {
+            if (!ctx || cropCanvas.classList.contains('hidden')) return;
+
+            const w = cropCanvas.width;
+            const h = cropCanvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Draw Selected Background Mode
+            drawBackgroundMode(w, h);
+
+            if (!state.image) return;
+
+            // 2. Draw Translucent/Dimmed Image Outside Mask
+            ctx.save();
+            ctx.globalAlpha = 0.35;
+            drawImageTransformed(ctx);
+            ctx.restore();
+
+            // 3. Define Mask Shape Path
+            const maskSize = Math.min(w, h) * 0.7;
+            const centerX = w / 2;
+            const centerY = h / 2;
+
+            ctx.save();
+            
+            // Feather / Blur Filter
+            if (state.feather > 0) {
+                ctx.filter = `blur(${state.feather}px)`;
+            }
+
+            ctx.beginPath();
+            createShapePath(ctx, centerX, centerY, maskSize, state.shape);
+            ctx.clip();
+
+            // Reset filter for clean image rendering inside clipped area
+            ctx.filter = 'none';
+
+            // Draw Full Opacity Image inside the Clipped Mask
+            drawImageTransformed(ctx);
+            ctx.restore();
+
+            // 4. Draw Outer Mask Outline & Alignment Crosshair Guides
+            drawMaskOutlineAndGuides(centerX, centerY, maskSize);
+        }
+
+        function drawBackgroundMode(w, h) {
+            if (state.bgMode === 'dark') {
+                ctx.fillStyle = '#050507';
+                ctx.fillRect(0, 0, w, h);
+            } else if (state.bgMode === 'light') {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, w, h);
+            } else if (state.bgMode === 'red') {
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(0, 0, w, h);
+            }
+            // 'checker' relies on CSS container background
+        }
+
+        function drawImageTransformed(targetCtx) {
+            const imgW = state.image.width * state.scale;
+            const imgH = state.image.height * state.scale;
+            const drawX = state.panX - imgW / 2;
+            const drawY = state.panY - imgH / 2;
+
+            targetCtx.drawImage(state.image, drawX, drawY, imgW, imgH);
+        }
+
+        function createShapePath(targetCtx, cx, cy, size, shape) {
+            if (shape === 'circle') {
+                targetCtx.arc(cx, cy, size / 2, 0, Math.PI * 2);
+            } else if (shape === 'oval') {
+                targetCtx.ellipse(cx, cy, size / 2, size / 2.8, 0, 0, Math.PI * 2);
+            } else if (shape === 'square') {
+                targetCtx.rect(cx - size / 2, cy - size / 2, size, size);
+            } else if (shape === 'rect') {
+                const rectW = size;
+                const rectH = size * (9 / 16);
+                targetCtx.rect(cx - rectW / 2, cy - rectH / 2, rectW, rectH);
+            }
+        }
+
+        function drawMaskOutlineAndGuides(cx, cy, size) {
+            // Draw Mask Border
+            ctx.save();
+            ctx.strokeStyle = '#FF007F';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            createShapePath(ctx, cx, cy, size, state.shape);
+            ctx.stroke();
+            ctx.restore();
+
+            // Draw Center Crosshair Guides if enabled
+            if (state.showGuides) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+
+                // Vertical Guide
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - size / 2);
+                ctx.lineTo(cx, cy + size / 2);
+                ctx.stroke();
+
+                // Horizontal Guide
+                ctx.beginPath();
+                ctx.moveTo(cx - size / 2, cy);
+                ctx.lineTo(cx + size / 2, cy);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+        }
+
+        // --- Mouse & Touch Controls (Pan / Zoom) ---
+        function getPointerPos(e) {
+            if (e.touches && e.touches.length > 0) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        }
+
+        function onPointerDown(e) {
+            if (!state.image) return;
+            
+            if (e.touches && e.touches.length === 2) {
+                // Pinch zoom init
+                state.pinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                return;
+            }
+
+            state.isDragging = true;
+            const pos = getPointerPos(e);
+            state.startX = pos.x - state.panX;
+            state.startY = pos.y - state.panY;
+        }
+
+        function onPointerMove(e) {
+            if (!state.image) return;
+
+            // Handle Pinch Zoom on touch devices
+            if (e.touches && e.touches.length === 2) {
+                const dist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                if (state.pinchDistance > 0) {
+                    const factor = dist / state.pinchDistance;
+                    state.scale = Math.max(0.1, Math.min(10, state.scale * factor));
+                    render();
+                }
+                state.pinchDistance = dist;
+                return;
+            }
+
+            // Handle Pan / Drag
+            if (state.isDragging) {
+                const pos = getPointerPos(e);
+                state.panX = pos.x - state.startX;
+                state.panY = pos.y - state.startY;
+                render();
+            }
+        }
+
+        function onPointerUp() {
+            state.isDragging = false;
+            state.pinchDistance = 0;
+        }
+
+        function onWheel(e) {
+            if (!state.image) return;
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+            state.scale = Math.max(0.1, Math.min(10, state.scale * zoomFactor));
+            render();
+        }
+
+        // Event Listeners for Canvas Interaction
+        cropCanvas.addEventListener('mousedown', onPointerDown);
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('mouseup', onPointerUp);
+
+        cropCanvas.addEventListener('touchstart', onPointerDown, { passive: false });
+        window.addEventListener('touchmove', onPointerMove, { passive: false });
+        window.addEventListener('touchend', onPointerUp);
+
+        cropCanvas.addEventListener('wheel', onWheel, { passive: false });
+
+        // --- Controls Event Handlers ---
+        shapeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                shapeBtns.forEach(b => {
+                    b.classList.remove('active', 'border-brand-600', 'bg-brand-600/10', 'text-brand-600');
+                    b.classList.add('border-brand-border', 'bg-brand-dark/40', 'text-gray-400');
+                });
+                btn.classList.add('active', 'border-brand-600', 'bg-brand-600/10', 'text-brand-600');
+                btn.classList.remove('border-brand-border', 'bg-brand-dark/40', 'text-gray-400');
+
+                state.shape = btn.dataset.shape;
+                render();
+            });
+        });
+
+        bgBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                bgBtns.forEach(b => {
+                    b.classList.remove('active', 'border-brand-600', 'bg-brand-600/10', 'text-brand-600');
+                    if (b.dataset.bg !== 'dark' && b.dataset.bg !== 'light' && b.dataset.bg !== 'red') {
+                        b.classList.add('border-brand-border', 'text-gray-300');
+                    }
+                });
+                btn.classList.add('active', 'border-brand-600', 'bg-brand-600/10', 'text-brand-600');
+                state.bgMode = btn.dataset.bg;
+                render();
+            });
+        });
+
+        featherSlider.addEventListener('input', (e) => {
+            state.feather = parseInt(e.target.value);
+            featherValue.textContent = `${state.feather} px`;
+            render();
+        });
+
+        toggleGuides.addEventListener('change', (e) => {
+            state.showGuides = e.target.checked;
+            render();
+        });
+
+        // --- Export Modal Handling ---
+        function toggleModal(show) {
+            if (show) {
+                exportModal.classList.remove('opacity-0', 'pointer-events-none');
+                exportModal.firstElementChild.classList.remove('scale-95');
+                exportModal.firstElementChild.classList.add('scale-100');
+            } else {
+                exportModal.classList.add('opacity-0', 'pointer-events-none');
+                exportModal.firstElementChild.classList.remove('scale-100');
+                exportModal.firstElementChild.classList.add('scale-95');
+            }
+        }
+
+        btnOpenExport.addEventListener('click', () => {
+            if (!state.image) {
+                alert('Por favor, selecciona una imagen primero para exportar.');
+                return;
+            }
+            toggleModal(true);
+        });
+
+        btnCloseModal.addEventListener('click', () => toggleModal(false));
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) toggleModal(false);
+        });
+
+        // --- High Density HD Image Export Engine ---
+        btnDownloadFinal.addEventListener('click', () => {
+            if (!state.image) return;
+
+            const format = document.querySelector('input[name="exportFormat"]:checked').value;
+            
+            // Create Offscreen High-Res Canvas maintaining full source image dimensions
+            const offscreenCanvas = document.createElement('canvas');
+            const offCtx = offscreenCanvas.getContext('2d');
+
+            // Set size based on original source resolution
+            const exportSize = Math.max(state.image.width, state.image.height);
+            offscreenCanvas.width = exportSize;
+            offscreenCanvas.height = exportSize;
+
+            const cx = exportSize / 2;
+            const cy = exportSize / 2;
+
+            // Apply Feather Blur if any
+            if (state.feather > 0) {
+                const blurScale = exportSize / Math.min(cropCanvas.width, cropCanvas.height);
+                offCtx.filter = `blur(${state.feather * blurScale}px)`;
+            }
+
+            // Create Shape Mask Path on Offscreen Canvas
+            offCtx.save();
+            offCtx.beginPath();
+            createShapePath(offCtx, cx, cy, exportSize, state.shape);
+            offCtx.clip();
+            offCtx.filter = 'none';
+
+            // Calculate exact position offsets based on current user drag & zoom
+            const canvasMinDim = Math.min(cropCanvas.width, cropCanvas.height);
+            const relativeScale = state.scale * (exportSize / (canvasMinDim * 0.7));
+
+            const imgW = state.image.width * relativeScale;
+            const imgH = state.image.height * relativeScale;
+
+            const offsetX = (state.panX - cropCanvas.width / 2) * (exportSize / canvasMinDim);
+            const offsetY = (state.panY - cropCanvas.height / 2) * (exportSize / canvasMinDim);
+
+            const drawX = cx - imgW / 2 + offsetX;
+            const drawY = cy - imgH / 2 + offsetY;
+
+            offCtx.drawImage(state.image, drawX, drawY, imgW, imgH);
+            offCtx.restore();
+
+            // Trigger File Download
+            const mimeType = format === 'ico' ? 'image/x-icon' : 'image/png';
+            const fileName = `leire-logo-${Date.now()}.${format}`;
+            
+            const dataUrl = offscreenCanvas.toDataURL(mimeType);
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            toggleModal(false);
+        });
+
+        // --- Service Worker Registration for PWA ---
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(() => console.log('Service Worker Registrado con éxito'))
+                    .catch(err => console.log('Service Worker Error:', err));
+            }
+        }
+    </script>
+</body>
+</html>
